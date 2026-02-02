@@ -34,9 +34,11 @@ marp: true
    2. User can receive an image
 
 ---
-## Sprint Timeline
+## Timeline
 
-1. Connect with APU and allow for user to ask questions to the AI
-2. Store sessions and allow user to navigate them
-3. Allow user to input images
-4. Allow user to generate images
+### Sprint 1:
+- Connect with APU and allow for user to ask questions to the AI
+- Store sessions and allow user to navigate them
+### Sprint 2:
+- Allow user to input images
+- Allow user to generate images
