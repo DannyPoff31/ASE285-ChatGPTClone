@@ -16,6 +16,8 @@ Research and learning can be difficult to find and parse on your own. Informatio
 
 ## Features and Requirements
 
+### Sprint 1
+
 1. Sessions
    1. User can create a new session
    2. User can delete a session
@@ -27,6 +29,9 @@ Research and learning can be difficult to find and parse on your own. Informatio
 
 ---
 ## Features and Requirements (Cont.)
+
+### Sprint 2
+
 3. Image input
    1. User can attach an image to their message
 4. Image generation
