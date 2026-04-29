@@ -13,7 +13,7 @@ export const sendConversationMessage = createAsyncThunk(
     }));
     
     // Add new user message
-    messages.push({ role: 'user', content: message.content });
+    messages.push({ role: 'user', content: message.content, imgContent: message.imgContent });
     
     // Get AI response
     const aiContent = await sendMessageToAI(messages);

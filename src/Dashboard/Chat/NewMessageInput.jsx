@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { BsSend } from "react-icons/bs";
+import { BsSend, BsPlusLg } from "react-icons/bs";
 import { v4 as uuid } from "uuid";
 import { addMessage, setSelectedConversationId, sendConversationMessage } from "../dashboardSlice";
 
 const NewMessageInput = () => {
   const [content, setContent] = useState("");
+  const [imgContent, setImgContent] = useState("");
 
   const dispatch = useDispatch();
 
@@ -24,6 +25,7 @@ const NewMessageInput = () => {
     const message = {
       aiMessage: false,
       content,
+      imgContent,
       id: uuid(),
     };
 
@@ -53,6 +55,7 @@ const NewMessageInput = () => {
 
     // Reset input
     setContent("");
+    setImgContent("");
   };
 
   const handleSendMessage = () => {
@@ -67,8 +70,26 @@ const NewMessageInput = () => {
     }
   };
 
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0]; 
+
+    const reader = new FileReader();
+
+    reader.onload = async () => {
+      const base64 = reader.result.split(",")[1]; // remove data URL prefix
+      setImgContent({
+        mimeType: file.type, // e.g. image/jpeg or image/png
+        data: base64
+      });
+
+    };
+
+    reader.readAsDataURL(file);
+  
+  }
+
   return (
-    <div className="new_message_input_container">
+    <div className="new_message_input_container" style={{ position: "relative" }}>
       <input
         className="new_message_input"
         placeholder={loading ? "Waiting for response..." : "Send a message ..."}
@@ -77,8 +98,25 @@ const NewMessageInput = () => {
         onKeyDown={handleKeyPressed}
         disabled={loading}
       />
-      <div className="new_message_icon_container" onClick={handleSendMessage}>
-        <BsSend color={loading ? "lightgrey" : "grey"} />
+      <div style={{
+          position: "absolute",
+          right: "50%",
+          display: "flex",
+          gap: "12px"
+        }}>
+        <label htmlFor="file-upload" className="new_message_icon_container">
+          <BsPlusLg color={loading ? "lightgrey" : "grey"} />
+        </label>
+        <input 
+          type="file" 
+          onChange={(e) => handleFileUpload(e)} 
+          style={{ display: "none" }} 
+          id="file-upload"
+      
+        />
+        <div className="new_message_icon_container" onClick={handleSendMessage}>
+          <BsSend color={loading ? "lightgrey" : "grey"} />
+        </div>
       </div>
     </div>
   );

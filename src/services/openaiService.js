@@ -1,7 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
+import fs from "fs";
 
 let aiClient = null;
 const MODEL = "gemini-2.5-flash";
+
+const photo = "testPhoto.jpg"
+
+const reader = new FileReader();
 
 /**
  * Ensure the GenAI client is ready.  Returns true on success.
@@ -40,30 +45,44 @@ export const sendMessageToAI = async (messages) => {
     throw new Error("AI client not initialized");
   }
 
-  // Convert messages array to GenAI format
-  // GenAI expects: [{role: 'user'|'model', parts: [{text: 'content'}]}]
-  const contents = messages.map((m) => ({
-    role: m.aiMessage ? "model" : "user",
-    parts: [{ text: m.content }],
-  }));
+  try {
 
+    // Convert messages array to GenAI format
+    // GenAI expects: [{role: 'user'|'model', parts: [{text: 'content'}]}]
+    const contents = messages.map((m) => {
+      const parts = [];
 
-    try {
-      const resp = await aiClient.models.generateContent({
-        model: MODEL,
-        contents: contents,
-      });
-
-      // genai shape: resp.data.choices[0].content
-      return resp.candidates[0].content.parts[0].text;
-    } catch (err) {
-      const status = err.response?.status;
-      console.error("GenAI API error", status, err.response?.data || err.message);
-      if (status === 429 && attempt < maxRetries) {
-        // Exponential backoff
-        const delay = Math.pow(2, attempt) * 200 + Math.random() * 100;
-        await new Promise((r) => setTimeout(r, delay));
+      if (m.imgContent) {
+        parts.push({
+          inlineData: {
+            data: m.imgContent.data,
+            mimeType: m.imgContent.mimeType,
+          },
+        });
       }
-      throw new Error("Failed to get response from AI");
-    }
+
+      if (m.content) {
+        parts.push({
+          text: m.content,
+        });
+      }
+
+      return {
+        role: m.aiMessage ? "model" : "user",
+        parts,
+      };
+    });
+    console.log("Formatted contents for GenAI:", contents);
+
+    const resp = await aiClient.models.generateContent({
+      model: MODEL,
+      contents: contents,
+    });
+
+    // genai shape: resp.data.choices[0].content
+    return resp.candidates[0].content.parts[0].text;
+  } catch (err) {
+    console.error("GenAI API error:", err.message);
+    throw err;
   }
+}

@@ -116,8 +116,9 @@
 }
 
 .new_message_icon_container {
-    position: absolute;
+    position: relative;
     transition: 0.4s;
+    cursor: pointer;
 }
 
 .new_message_icon_container:hover {
